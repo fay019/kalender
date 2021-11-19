@@ -262,8 +262,7 @@ class Crud {
                 response[ i ].birthday = this.calculateNextBirthday( response[ i ].geburtstag ); // the 'age' field is the result of calculating the person's age
                 response[ i ].age = this.calculateAge( response[ i ].geburtstag ); // the 'birthday' field is the result of the calculation of the days remaining for his birthday
             }
-            response = this.orderBy( orderBy, direction, response ); //we order the response object with orderBy and direction
-            this.elementsMaker( response )
+            this.orderBy( orderBy, direction, response ); //we order the response object with orderBy and direction
         } )
     }
 
@@ -392,7 +391,7 @@ class Crud {
                 return b[ orderBy ] - a[ orderBy ]
             } )
         }
-        return data
+        this.elementsMaker( data )
     }
     //endregion
 
@@ -476,9 +475,9 @@ class Crud {
     //region orderBy Listener
     /**
      * orderBy listener
-     *
+     *@param origin {boolean} // toDo  bug after edit create or delete , the triangle is not in the good place
      */
-    orderByListener() {
+    orderByListener(origin = false) {
         let _this = this;
         let $radio = $( '.bi' );
         let $radioDown = $( "[data-sort = 'asc']" );
@@ -550,5 +549,5 @@ $( document ).ajaxStop( function () {
 //region Start section
 crud = new Crud();
 crud.getData();
-crud.orderByListener();
+crud.orderByListener(true);
 //endregion

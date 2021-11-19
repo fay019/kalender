@@ -8,8 +8,6 @@
     <link rel="stylesheet" href="css/bootstrap-icons-1.7.1/bootstrap-icons.css">
     <link rel="stylesheet" href="css/style.css">
     <title>Kalender</title>
-    <style>
-    </style>
 </head>
 <body>
 <div class="container mt-5" id="container">
@@ -17,10 +15,6 @@
     <div class="row text-center">
         <div class="m-auto mb-4" id="first">
             <form class="form-horizontal" action="#">
-<!--                <div class="col-2">-->
-<!--                    <button class="btn btn-warning btnOrderBirthday float-start" data-btn="birthday" id="sortBirthday">Sort by Birthday</button>-->
-<!--                    <button class="mx-2 btn btn-info btnOrderName float-start d-none" data-btn="name" id="sortName">Sort by Name</button>-->
-<!--                </div>-->
                 <div class="row float-end">
                     <div class="col-4">
                         <label for="nameInput" class="visually-hidden">Name</label>
@@ -35,31 +29,6 @@
                     </div>
                 </div>
             </form>
-            <!-- Modal -->
-            <!--<div class="modal fade" id="modalAdd" tabindex="-1" aria-labelledby="modalAddLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="modalAddLabel">Add birthday</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body row">
-                                <div class="col-auto">
-                                    <label for="nameInput" class="visually-hidden">Name</label>
-                                    <input type="text" class="form-control" id="nameInput" placeholder="name" value="" required>
-                                </div>
-                                <div class="col-auto">
-                                    <label for="dateInput" class="visually-hidden">Date</label>
-                                    <input type="date" class="form-control" id="dateInput" required>
-                                </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" data-btn="create" id="saveAdd">Save changes</button>
-                        </div>
-                    </div>
-                </div>
-            </div>-->
         </div>
         <div id="alert"></div>
     </div>
@@ -97,9 +66,7 @@
         </tbody>
     </table>
 </div>
-
 <script src="js/jquery-3.6.0.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
 <script src="js/crud.js"></script>
 </body>
 </html>
