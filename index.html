@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-icons-1.7.1/bootstrap-icons.css">
     <link rel="stylesheet" href="css/style.css">
     <title>Kalender</title>
     <style>
@@ -14,20 +15,28 @@
 <div class="container mt-5" id="container">
     <h1 class="text-center fw-bolder mb-5">Kalender Manager</h1>
     <div class="row text-center">
-<!--        <div class="col-auto">-->
-<!--            <label for="nameInput" class="visually-hidden">Name</label>-->
-<!--            <input type="text" class="form-control" id="nameInput" placeholder="name">-->
-<!--        </div>-->
-<!--        <div class="col-auto">-->
-<!--            <label for="dateInput" class="visually-hidden">Date</label>-->
-<!--            <input type="date" class="form-control" id="dateInput">-->
-<!--        </div>-->
         <div class="m-auto mb-4" id="first">
-            <button class="btn btn-warning btnOrderBirthday float-start" data-btn="birthday" id="sortBirthday">Sort by Birthday</button>
-            <button class="mx-2 btn btn-info btnOrderName float-start d-none" data-btn="name" id="sortName">Sort by Name</button>
-            <button type="submit" class="btn btn-primary float-end" data-btn="add" id="btnAdd" data-bs-toggle="modal" data-bs-target="#modalAdd">Add new birthday</button>
+            <form class="form-horizontal" action="#">
+<!--                <div class="col-2">-->
+<!--                    <button class="btn btn-warning btnOrderBirthday float-start" data-btn="birthday" id="sortBirthday">Sort by Birthday</button>-->
+<!--                    <button class="mx-2 btn btn-info btnOrderName float-start d-none" data-btn="name" id="sortName">Sort by Name</button>-->
+<!--                </div>-->
+                <div class="row float-end">
+                    <div class="col-4">
+                        <label for="nameInput" class="visually-hidden">Name</label>
+                        <input type="text" class="form-control" id="nameInput" placeholder="name" required>
+                    </div>
+                    <div class="col-5">
+                        <label for="dateInput" class="visually-hidden">Date</label>
+                        <input type="date" class="form-control" id="dateInput" required>
+                    </div>
+                    <div class="col-3">
+                        <button type="submit" class="btn btn-primary " data-btn="create" id="btnAdd">Add</button>
+                    </div>
+                </div>
+            </form>
             <!-- Modal -->
-            <div class="modal fade" id="modalAdd" tabindex="-1" aria-labelledby="modalAddLabel" aria-hidden="true">
+            <!--<div class="modal fade" id="modalAdd" tabindex="-1" aria-labelledby="modalAddLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -50,20 +59,41 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>-->
         </div>
+        <div id="alert"></div>
     </div>
-    <table class="table table-responsive m-auto text-center">
+    <table class="table table-responsive m-auto table-striped text-center">
         <thead id="thead">
             <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Date</th>
-                <th scope="col">Age (Year)</th>
-                <th scope="col">Birthday in (day)</th>
+                <th scope="col">
+                    <div class="form-check">
+                        <span><i class="bi bi-caret-down-square" data-name="name" data-sort="asc"></i><i class="bi bi-caret-up" data-name="name" data-sort="desc"></i></span>
+                        Name
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="form-check">
+                        <span><i class="bi bi-caret-down" data-name="geburtstag" data-sort="asc"></i><i class="bi bi-caret-up" data-name="geburtstag" data-sort="desc"></i></span>
+                        Date
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="form-check">
+                        <span><i class="bi bi-caret-down" data-name="age" data-sort="asc"></i><i class="bi bi-caret-up" data-name="age" data-sort="desc"></i></span>
+                        Age (Year)
+                    </div>
+                </th>
+                <th scope="col">
+                    <div class="form-check">
+                        <span><i class="bi bi-caret-down" data-name="birthday" data-sort="asc"></i><i class="bi bi-caret-up" data-name="birthday" data-sort="desc"></i></span>
+                        Birthday in (day)
+                    </div>
+                </th>
                 <th scope="col" colspan="2">Action</th>
             </tr>
         </thead>
-        <tbody id="tbody">
+        <tbody id="tbody" class="">
         </tbody>
     </table>
 </div>

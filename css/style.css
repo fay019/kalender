@@ -1,9 +1,17 @@
 
+body {
+    background-color: #0b0c0d;
+    margin: 0;
+    padding: 0;
+}
 #container{
     border: 1px solid black;
     border-radius: 15px;
     padding: 30px;
     background-color: white;
+}
+tr {
+    vertical-align: middle;
 }
 #btnAdd{
     /*margin-left: 30px;*/
@@ -11,10 +19,8 @@
 div + .alert{
     width: 40%;
 }
-body {
-    background-color: #0b0c0d;
-    margin: 0;
-    padding: 0;
+.form-check .form-check-input {
+    float: none;
 }
 
 .loader {
