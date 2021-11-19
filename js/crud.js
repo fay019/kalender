@@ -66,7 +66,6 @@ class Crud {
 
     //endregion
 
-
     //region Constructor
     /**
      * Start parameter
@@ -123,6 +122,7 @@ class Crud {
                 $( parent )
             );
     };
+
     //endregion
 
     //region element creator in Table
@@ -217,8 +217,8 @@ class Crud {
         $btnCancel.setAttribute( 'data-btn', 'cancel' )
         $btnCancel.innerHTML = 'Cancel'
     }
-    //endregion
 
+    //endregion
 
     //region input controller
     /** input controller
@@ -233,6 +233,7 @@ class Crud {
         // Empty data we do nothing and wait ti some new action from user
         return false
     }
+
     //endregion
 
     //region CRUD Section
@@ -371,32 +372,28 @@ class Crud {
     //region OrderBy -- method
     /**
      * Object order by birthday or name (what in this sorted )
-     * @param orderBy {string}
-     * @param direction {string}
-     * @param data {object}
-     * @return {object}
+     * @param orderBy {string} // name of the field that we want order
+     * @param direction {string} // wish direction Asc or Desc
+     * @param data {object} // the data
+     * @return {object} // we return an ordener object
      */
     orderBy( orderBy, direction, data ) {
-        console.log(data)
 
-        if ( direction === 'asc' && ( orderBy === 'name' || orderBy === 'geburtstag' ) ) {
+        if ( direction === 'asc' && ( orderBy === 'name' || orderBy === 'geburtstag' ) ) { // asc for string field
             data.sort( ( a, b ) => ( a[ orderBy ] > b[ orderBy ] ) ? 1 : -1 )
-        } else if ( direction === 'desc' && ( orderBy === 'name' || orderBy === 'geburtstag' ) ) {
+        } else if ( direction === 'desc' && ( orderBy === 'name' || orderBy === 'geburtstag' ) ) { // desc for string field
             data.sort( ( a, b ) => ( a[ orderBy ] < b[ orderBy ] ) ? 1 : -1 )
-        } else if ( direction === 'asc' && ( orderBy === 'age' || orderBy === 'birthday' ) ) {
-            console.log( 'ici asc nombre ' + orderBy, data )
+        } else if ( direction === 'asc' && ( orderBy === 'age' || orderBy === 'birthday' ) ) { // asc for number field
             data.sort( function ( a, b ) {
                 return a[ orderBy ] - b[ orderBy ]
             } )
-        } else {
-            console.log( 'ici desc nombre ' + orderBy, data )
+        } else { // desc for number field
             data.sort( function ( a, b ) {
                 return b[ orderBy ] - a[ orderBy ]
             } )
         }
         return data
     }
-
     //endregion
 
     //region age calculator
@@ -462,8 +459,11 @@ class Crud {
         $( '#dateInput' ).val( '' ); //Clear the input date
     }
 
-    //endregion
+    //endregion####
+
+    //region delete all data only for admin and with the console
     /**
+     * after I add much data it was easy to remove all data from server
      * Delete alla record
      */
     deleteAllData() {
@@ -471,23 +471,27 @@ class Crud {
             this.delete( this.data[ dataKey ].id, this.data )
         }
     };
+    //endregion
 
-    radioSorting() {
+    //region orderBy Listener
+    /**
+     * orderBy listener
+     *
+     */
+    orderByListener() {
         let _this = this;
         let $radio = $( '.bi' );
         let $radioDown = $( "[data-sort = 'asc']" );
         let $radioUp = $( "[data-sort = 'desc']" );
-        console.log( $radioDown, $radioUp, $radio )
+
         $radio.on( 'click', ( e ) => {
             let $this = $( e.target );
             let direction = $this.attr( 'data-sort' );
-            let orderBy = $this.attr( 'data-name' )
-            console.log( $this )
-            if ( $this.hasClass( 'bi-caret-down-square' ) || $this.hasClass( 'bi-caret-up-square' ) ) {
-                console.log( 'deja' )
-                return false;
-            } else {
+            let orderBy = $this.attr( 'data-name' );
 
+            if ( $this.hasClass( 'bi-caret-down-square' ) || $this.hasClass( 'bi-caret-up-square' ) ) {
+                return false; // nothing is done if the user clicks on the already selected triangle
+            } else {
                 $radioDown.removeClass( 'bi-caret-down-square' )
                 $radioDown.addClass( 'bi-caret-down' )
                 $radioUp.removeClass( 'bi-caret-up-square' )
@@ -500,21 +504,14 @@ class Crud {
                     $this.removeClass( 'bi-caret-up' )
                     $this.addClass( 'bi-caret-up-square' )
                 }
-
                 _this.getData( orderBy, direction );
-
             }
-
         } )
-
     }
+    //endregion
 
     ///// Class End /////
 }
-
-crud = new Crud();
-crud.getData();
-crud.radioSorting();
 
 //region AJAX listener for Loading action
 $( document ).ajaxStart( function () {
@@ -532,8 +529,8 @@ $( document ).ajaxStart( function () {
 </div>` ).appendTo( $( 'body' ) )
 } )
 $( document ).ajaxStop( function () {
-    $( '.alert' ).fadeOut();
     $( '.loader' ).remove();
+    $( '.alert' ).fadeOut();
     // Add the div messages if we have °_°
     if ( crud.message ) { // check if message is not empty
         crud.messageAlert( crud.message, crud.color, () => { // the message remains only 3s then is deleted from the window
@@ -548,4 +545,10 @@ $( document ).ajaxStop( function () {
     } // clear all after write is completed
     $( 'button' ).prop( 'disabled', false )
 } )
+//endregion
+
+//region Start section
+crud = new Crud();
+crud.getData();
+crud.orderByListener();
 //endregion
