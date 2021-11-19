@@ -77,7 +77,6 @@ class Crud {
         this.urlToken = this.URL + '/' + this.TOKEN; // the url + token
         this.message = ''; // returned message if we need like "Message are deleted !!"
         this.color = ''; // this is for alert color
-        this.sorted = false; // if user used the sort btn
         this.postion = { // for positon of the data in table ==> DOM
             name:0,
             geburtstag:1,
@@ -109,6 +108,7 @@ class Crud {
 
     //endregion
 
+    //region element construct
     /**
      * method to create element
      * made to avoid redundancy
@@ -123,8 +123,9 @@ class Crud {
                 $( parent )
             );
     };
+    //endregion
 
-    //region element creator
+    //region element creator in Table
     /**
      * here we made the table of the list with button
      * @param data {object}
@@ -143,6 +144,7 @@ class Crud {
             let id = data[ i ].id; // save the ID
             let hId = '#' + id; // add # to the id, for selector
             let $td = $( '<td>' ); // creat "td" element
+
             $( '<tr>' ).attr( 'id', id ).appendTo( $tbody ); // set the id on our element (with the same registration id, and use it later to find it easily)
             /////////////// name
             this.creatElement( '<th scope="row">', data[ i ].name, $( hId ) ); // element for name
@@ -191,6 +193,7 @@ class Crud {
         }
         $tr[ this.postion.name ].innerHTML = '';
         $tr[ this.postion.geburtstag ].innerHTML = '';
+
         // Add input field
         $( '<input type="text" class="form-control form-control-sm" id="nameInput" placeholder="name" value="" required>' )
             .val( name )
@@ -203,6 +206,7 @@ class Crud {
             .removeClass( !boolean ? 'is-invalid' : '' )
             .appendTo( $tr[ this.postion.geburtstag ] )
         // end add field
+
         let $btnEdit = $tr[ this.postion.btn ].firstElementChild
         $btnEdit.classList.replace( 'btn-success', 'btn-primary' )
         $btnEdit.classList.replace( 'btnEdit', 'btnPut' )
@@ -213,9 +217,11 @@ class Crud {
         $btnCancel.setAttribute( 'data-btn', 'cancel' )
         $btnCancel.innerHTML = 'Cancel'
     }
+    //endregion
 
-    //endregion input controller
-    /**
+
+    //region input controller
+    /** input controller
      * check if user give us empty data or not
      * @param data {object}
      */
@@ -227,44 +233,42 @@ class Crud {
         // Empty data we do nothing and wait ti some new action from user
         return false
     }
+    //endregion
 
     //region CRUD Section
     /**
+     * creat new data
      * CRUD Created Method
      * @param data {Object} data
      */
     create( data ) {
         this.ajax( this.urlToken, this.MHETHOD_POST, data, () => {
-            this.message = 'Created name: ' + data.name;
-            this.color = 'success';
-            this.getData();
+            this.message = 'Created name: ' + data.name; // add message when success
+            this.color = 'success'; // add bootstrap color for success
+            this.getData(); // reload data
         } )
     }
 
     /**
      * CRUD Read Method
+     * read all data from server
+     * @param orderBy {string} // wich field name we want order // default is by name
+     * @param direction {string} // wich direction of sort ascendant or descendant // default is ascendant
      */
     getData( orderBy = 'name', direction = 'asc' ) {
-        let data = {};
-        this.ajax( this.urlToken, this.MHETHOD_GET, data, ( response ) => {
-            for ( const i in response ) {
-                let birthday = this.calculateNextBirthday( response[ i ].geburtstag );
-                if ( birthday === 0 ) {
-                    response[ i ].birthday = 0;
-                } else if ( birthday === 1 ) {
-                    response[ i ].birthday = 1
-                } else {
-                    response[ i ].birthday = birthday;
-                }
-                response[ i ].age = this.calculateAge( response[ i ].geburtstag );
+        this.ajax( this.urlToken, this.MHETHOD_GET, {}, ( response ) => {
+            for ( const i in response ) { // add age and birthday fiel in our object
+                response[ i ].birthday = this.calculateNextBirthday( response[ i ].geburtstag ); // the 'age' field is the result of calculating the person's age
+                response[ i ].age = this.calculateAge( response[ i ].geburtstag ); // the 'birthday' field is the result of the calculation of the days remaining for his birthday
             }
-            response = this.orderBy( orderBy, direction, response );
+            response = this.orderBy( orderBy, direction, response ); //we order the response object with orderBy and direction
             this.elementsMaker( response )
         } )
     }
 
     /**
      * CRUD Put/Update Method
+     * send update data to server with id and new data if we have
      * @param id {number}
      * @param data {object}
      */
@@ -279,6 +283,7 @@ class Crud {
 
     /**
      * CRUD Delete Method
+     * delete data from server
      * @param id {string} id
      * @param data {Object} data
      */
@@ -302,10 +307,10 @@ class Crud {
      */
     messageAlert( message, color, callback ) {
         let $alert = $( '#alert' );
-        $alert.fadeOut()
+        $alert.fadeOut() // Hide the matched elements by fading them to transparent.
         $( `<div class="mx-auto my-3 alert alert-${color}">` ).html( message ).appendTo( $alert )
-        $alert.fadeIn();
-        callback();
+        $alert.fadeIn(); //Display the matched elements by fading them to opaque.
+        callback(); //callback function if we need
     }
 
     //endregion
@@ -318,26 +323,24 @@ class Crud {
         let _this = this; // save the 'this' while we use old syntax of function methode
         let $btn = $( 'button' );
         let id = 0;
-        let $btnBirthday = $( '.btnOrderBirthday' );
-        let $btnName = $( '.btnOrderName' );
         $btn.off( 'click' ).on( 'click', function () {
             let $elem = $( this );
             this.data = {
                 name:$elem.parent().parent().children( 'th' ).html(),
                 geburtstag:$elem.parent().parent().children( 'td' ).html(),
             }
-            switch ( $elem.attr( 'data-btn' ) ) {
+            switch ( $elem.attr( 'data-btn' ) ) { // check wish button was clicked
                 case 'edit':// if the button is an Edit button then ==> PUT method
                     id = $elem.parent().parent().attr( 'id' ); // we take the id of the record we want to edit // the first parent is the <td> of this button, the second parent is <tr> and here we have the id of the record
                     _this.editElement( id, false )
                     break
                 case 'delete': // if the button is a Delete button then ==> DELETE method
                     id = $elem.parent().parent().attr( 'id' ); // we take the id of the record we want to delete // the first parent is the <td> of this button, the second parent is <tr> and here we have the id of the record
-                    _this.delete( id, this.data );
+                    _this.delete( id, this.data ); // call the delete method
                     break
                 case 'put' :// if the button is an Edit button then ==> PUT method
                     id = $elem.parent().parent().attr( 'id' ); // we take the id of the record we want to delete // the first parent is the <td> of this button, the second parent is <tr> and here we have the id of the record
-                    this.data = {
+                    this.data = { // put the user input to this data
                         name:$elem.parent().parent().children( 'th' ).children( 'input' ).val(),
                         geburtstag:$elem.parent().parent().children( 'td' ).children( 'input' ).val(),
                     };
@@ -351,26 +354,12 @@ class Crud {
                 case 'cancel' : // if the button is a Cancel button then ==> GET method
                     _this.getData();
                     break
-                // case 'birthday' : // if the button is a Sort button then ==> GET method
-                //     _this.sorted = 'birthday'; // sort take birthday
-                //     $btnBirthday.addClass( 'd-none' );
-                //     $btnName.removeClass( 'd-none' );
-                //     _this.getData()
-                // //     break
-                // case 'name' : // if the button is a Sort button then ==> GET method
-                //     _this.sorted = 'name'; // sort take name
-                //     $btnName.addClass( 'd-none' );
-                //     $btnBirthday.removeClass( 'd-none' );
-                //     _this.getData()
-                //     break
-                case 'create':
-                    //$( '#modalAdd' ).modal( 'hide' );
-                    this.data = {
+                case 'create': // create button
+                    this.data = { // put the user input to this data
                         name:$( '#nameInput' ).val(),
                         geburtstag:$( '#dateInput' ).val()
                     };
-                    // crud.create( crud.data ); // sent to creat method
-                    _this.inputController( this.data );
+                    _this.inputController( this.data ); // call the inputController method
                     break
                 default:
             }
@@ -379,7 +368,7 @@ class Crud {
 
     //endregion
 
-    //region Order by -- method
+    //region OrderBy -- method
     /**
      * Object order by birthday or name (what in this sorted )
      * @param orderBy {string}
