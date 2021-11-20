@@ -159,8 +159,8 @@ class Crud {
             this.creatElement( '<td>', date, $( hId ) ); // element for birthday
             /////////////// age
             // age in "text" string if age is 0 or negativ
-            ( data[ i ].age < -1 ) ? age = '<small>will be born in: ' + ( data[ i ].age * -1 ) + ' years</small>'
-                : ( data[ i ].age < 0 ) ? age = '<small>he/she will be born in less than 1 year</small>'
+            ( data[ i ].age < -1 ) ? age = '<small>He/she will be born in: ' + ( data[ i ].age * -1 ) + ' years</small>'
+                : ( data[ i ].age < 0 ) ? age = '<small>He/she will be born in less than 1 year</small>'
                     : ( data[ i ].age === 0 ) ? age = 'Less than 1 year' : age = data[ i ].age;
 
             this.creatElement( '<td>', age, $( hId ) );// element for age
