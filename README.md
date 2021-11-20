@@ -28,7 +28,7 @@ Viel Erfolg!
 
 Zusatzaufgaben:
 - Gestaltung UI mit Bootstrap // done
-- Ausgabe in Kalenderform  // toDo Ask
+- Ausgabe in Kalenderform // 
 - Anzeige wie alt eine Person ist // done
 - Anzeige in wie vielen Tagen der nächste Geburtstag ist // done
 - Reihung der Personen nach den nächsten Geburtstagen // done
