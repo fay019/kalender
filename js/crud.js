@@ -3,6 +3,7 @@
  */
 class Crud {
 
+    //region Get section
     //region Const TOKEN
     /**
      * TOKEN // faycal is the constant
@@ -33,7 +34,7 @@ class Crud {
      * @returns {string}
      * @constructor
      */
-    get MHETHOD_POST() {
+    get METHOD_POST() {
         return 'POST'
     }
 
@@ -42,7 +43,7 @@ class Crud {
      * @returns {string}
      * @constructor
      */
-    get MHETHOD_GET() {
+    get METHOD_GET() {
         return 'GET'
     }
 
@@ -51,7 +52,7 @@ class Crud {
      * @returns {string}
      * @constructor
      */
-    get MHETHOD_PUT() {
+    get METHOD_PUT() {
         return 'PUT'
     }
 
@@ -60,10 +61,11 @@ class Crud {
      * @returns {string}
      * @constructor
      */
-    get MHETHOD_DELETE() {
+    get METHOD_DELETE() {
         return 'DELETE'
     }
 
+    //endregion
     //endregion
 
     //region Constructor
@@ -83,6 +85,8 @@ class Crud {
             birthday:3,
             btn:4,
         };
+        this.orderByDefault = 'name'; // default order  by
+        this.directionDefault = 'asc'; // default direction
     }
 
     //endregion
@@ -136,8 +140,7 @@ class Crud {
         this.data = data;
 
         for ( let i in data ) { // browse our object
-            console.log( 'le type age: ', typeof data[ i ].age )
-            console.log( 'le type birthday: ', typeof data[ i ].birthday )
+            let age = '';
             let date = '';
             let birthdayText = '';
             let dateO = new Date( data[ i ].geburtstag );
@@ -149,14 +152,18 @@ class Crud {
             /////////////// name
             this.creatElement( '<th scope="row">', data[ i ].name, $( hId ) ); // element for name
             /////////////// birthday
-
             date = ( '0' + dateO.getDate() ).slice( -2 ) // '0' + to have 01 or 02 ... and if the days are 10 and more like, then we have 010, 011 ... and slice (-2) we only take the 2 (- that is to say the 2 last) character if '01' we have '01' or if '010' then has '10'
             date += this.dateSeparator + ( '0' + ( dateO.getMonth() + 1 ) ).slice( -2 ) // month start at 0 in javascript and same for '0'+ and slice(-2) + separator
             date += this.dateSeparator + dateO.getFullYear() // get year in YYYY format + separator
             // date from 2021-11-02 to 02-11-2021
             this.creatElement( '<td>', date, $( hId ) ); // element for birthday
             /////////////// age
-            this.creatElement( '<td>', data[ i ].age, $( hId ) );// element for age
+            // age in "text" string if age is 0 or negativ
+            ( data[ i ].age < -1 ) ? age = '<small>will be born in: ' + ( data[ i ].age * -1 ) + ' years</small>'
+                : ( data[ i ].age < 0 ) ? age = '<small>he/she will be born in less than 1 year</small>'
+                    : ( data[ i ].age === 0 ) ? age = 'Less than 1 year' : age = data[ i ].age;
+
+            this.creatElement( '<td>', age, $( hId ) );// element for age
             /////////////// birthday in days
             // /birthday in "text" string if it is equal to or less than 1
             ( data[ i ].birthday === 0 ) ? birthdayText = 'Today'
@@ -206,16 +213,18 @@ class Crud {
             .removeClass( !boolean ? 'is-invalid' : '' )
             .appendTo( $tr[ this.postion.geburtstag ] )
         // end add field
-
-        let $btnEdit = $tr[ this.postion.btn ].firstElementChild
-        $btnEdit.classList.replace( 'btn-success', 'btn-primary' )
-        $btnEdit.classList.replace( 'btnEdit', 'btnPut' )
-        $btnEdit.setAttribute( 'data-btn', 'put' )
-        $btnEdit.innerHTML = 'Add'
-        let $btnCancel = $tr[ this.postion.btn ].lastElementChild
-        $btnCancel.classList.replace( 'btnDelete', 'btnCancel' )
-        $btnCancel.setAttribute( 'data-btn', 'cancel' )
-        $btnCancel.innerHTML = 'Cancel'
+        // begin switch the buttons
+        // Edit to Add
+        let btnEdit = $tr[ this.postion.btn ].firstElementChild
+        btnEdit.classList.replace( 'btn-success', 'btn-primary' )
+        btnEdit.classList.replace( 'btnEdit', 'btnPut' )
+        btnEdit.setAttribute( 'data-btn', 'put' )
+        btnEdit.innerHTML = 'Add'
+        // Delete to Cancel
+        let btnCancel = $tr[ this.postion.btn ].lastElementChild
+        btnCancel.classList.replace( 'btnDelete', 'btnCancel' )
+        btnCancel.setAttribute( 'data-btn', 'cancel' )
+        btnCancel.innerHTML = 'Cancel'
     }
 
     //endregion
@@ -243,10 +252,10 @@ class Crud {
      * @param data {Object} data
      */
     create( data ) {
-        this.ajax( this.urlToken, this.MHETHOD_POST, data, () => {
+        this.ajax( this.urlToken, this.METHOD_POST, data, () => {
             this.message = 'Created name: ' + data.name; // add message when success
             this.color = 'success'; // add bootstrap color for success
-            this.getData(); // reload data
+            this.getData(this.orderByDefault, this.directionDefault); // reload data
         } )
     }
 
@@ -257,7 +266,7 @@ class Crud {
      * @param direction {string} // wich direction of sort ascendant or descendant // default is ascendant
      */
     getData( orderBy = 'name', direction = 'asc' ) {
-        this.ajax( this.urlToken, this.MHETHOD_GET, {}, ( response ) => {
+        this.ajax( this.urlToken, this.METHOD_GET, {}, ( response ) => {
             for ( const i in response ) { // add age and birthday fiel in our object
                 response[ i ].birthday = this.calculateNextBirthday( response[ i ].geburtstag ); // the 'age' field is the result of calculating the person's age
                 response[ i ].age = this.calculateAge( response[ i ].geburtstag ); // the 'birthday' field is the result of the calculation of the days remaining for his birthday
@@ -274,10 +283,10 @@ class Crud {
      */
     edit( id, data ) {
         let url = this.urlToken + '/' + id
-        this.ajax( url, this.MHETHOD_PUT, data, () => {
+        this.ajax( url, this.METHOD_PUT, data, () => {
             this.message = 'Edited name: ' + data.name;
             this.color = 'success';
-            this.getData()
+            this.getData(this.orderByDefault, this.directionDefault)
         } )
     }
 
@@ -289,10 +298,10 @@ class Crud {
      */
     delete( id, data ) {
         let url = this.urlToken + '/' + id;
-        this.ajax( url, this.MHETHOD_DELETE, '', () => {
+        this.ajax( url, this.METHOD_DELETE, '', () => {
             this.message = 'Deleted name: ' + data.name;
             this.color = 'danger';
-            this.getData()
+            this.getData(this.orderByDefault, this.directionDefault)
         } )
     }
 
@@ -368,13 +377,52 @@ class Crud {
 
     //endregion
 
+    //region orderBy Listener
+    /**
+     * orderBy listener
+     */
+    orderByListener( ) {
+        let _this = this;
+        let $radio = $( '.bi' );
+        let $radioDown = $( "[data-sort = 'asc']" );
+        let $radioUp = $( "[data-sort = 'desc']" );
+        origin ? console.log('origin true'): console.log('origin false');
+        $radio.on( 'click', ( e ) => {
+            let $this = $( e.target );
+            let direction = $this.attr( 'data-sort' );
+            let orderBy = $this.attr( 'data-name' );
+
+            if ( $this.hasClass( 'bi-caret-down-square' ) || $this.hasClass( 'bi-caret-up-square' ) ) {
+                return false; // nothing is done if the user clicks on the already selected triangle
+            } else { // all icon get the no selected icon
+                $radioDown.removeClass( 'bi-caret-down-square' )
+                $radioDown.addClass( 'bi-caret-down' )
+                $radioUp.removeClass( 'bi-caret-up-square' )
+                $radioUp.addClass( 'bi-caret-up' )
+                // get the selected icon
+                if ( direction === 'asc' ) {
+                    $this.removeClass( ( 'bi-caret-down' ) )
+                    $this.addClass( 'bi-caret-down-square' )
+                } else {
+                    $this.removeClass( 'bi-caret-up' )
+                    $this.addClass( 'bi-caret-up-square' )
+                }
+                _this.orderByDefault = orderBy; // save order by
+                _this.directionDefault = direction; // save order direction
+                _this.getData( orderBy, direction );
+            }
+        } )
+    }
+
+    //endregion
+
     //region OrderBy -- method
     /**
      * Object order by birthday or name (what in this sorted )
      * @param orderBy {string} // name of the field that we want order
      * @param direction {string} // wish direction Asc or Desc
      * @param data {object} // the data
-     * @return {object} // we return an ordener object
+     * @return {object} // we return an ordered object
      */
     orderBy( orderBy, direction, data ) {
 
@@ -393,22 +441,22 @@ class Crud {
         }
         this.elementsMaker( data )
     }
+
     //endregion
 
     //region age calculator
     /**
      * Age calculator
-     * @param birthday {string} // like (2019-12-31)
-     * @returns {string|string|number} return small text when number is small then 0, or age in number
+     * @param birthday {string} // input date in day format, like (2019-12-31)
+     * @returns {number} return age in number
      */
     calculateAge( birthday ) {
-
-        let age = new Date( birthday ).getUTCFullYear(); // the birthday is transformed in Date object then we take only the year (yyyy)
-        age -= 1970; // Javascript date begin with 1970  then if we
-        return ( age < -1 ) ? '<small>will be born in: ' + ( age * -1 ) + '</small>'
-            : ( age < 0 ) ? '<small>will be born in soon =></small>'
-                : ( age === 0 ) ? '<1' : age;
-
+        let birthDate = new Date( birthday ); // transform the birthday to Date object
+        let today = new Date(); // get the day of now
+        let age = today.getFullYear() - birthDate.getFullYear() // the diff between our date and today
+        let months = today.getMonth() - birthDate.getMonth(); // get the month diff
+        ( months < 0 || ( months === 0 && today.getDate() < birthDate.getDate() ) )? age-- : age ; // check if the month is smaller or ( is same and today date is smaller than the birthday date )
+        return age
     }
 
     //endregion
@@ -470,43 +518,7 @@ class Crud {
             this.delete( this.data[ dataKey ].id, this.data )
         }
     };
-    //endregion
 
-    //region orderBy Listener
-    /**
-     * orderBy listener
-     *@param origin {boolean} // toDo  bug after edit create or delete , the triangle is not in the good place
-     */
-    orderByListener(origin = false) {
-        let _this = this;
-        let $radio = $( '.bi' );
-        let $radioDown = $( "[data-sort = 'asc']" );
-        let $radioUp = $( "[data-sort = 'desc']" );
-
-        $radio.on( 'click', ( e ) => {
-            let $this = $( e.target );
-            let direction = $this.attr( 'data-sort' );
-            let orderBy = $this.attr( 'data-name' );
-
-            if ( $this.hasClass( 'bi-caret-down-square' ) || $this.hasClass( 'bi-caret-up-square' ) ) {
-                return false; // nothing is done if the user clicks on the already selected triangle
-            } else {
-                $radioDown.removeClass( 'bi-caret-down-square' )
-                $radioDown.addClass( 'bi-caret-down' )
-                $radioUp.removeClass( 'bi-caret-up-square' )
-                $radioUp.addClass( 'bi-caret-up' )
-
-                if ( direction === 'asc' ) {
-                    $this.removeClass( ( 'bi-caret-down' ) )
-                    $this.addClass( 'bi-caret-down-square' )
-                } else {
-                    $this.removeClass( 'bi-caret-up' )
-                    $this.addClass( 'bi-caret-up-square' )
-                }
-                _this.getData( orderBy, direction );
-            }
-        } )
-    }
     //endregion
 
     ///// Class End /////
@@ -549,5 +561,5 @@ $( document ).ajaxStop( function () {
 //region Start section
 crud = new Crud();
 crud.getData();
-crud.orderByListener(true);
+crud.orderByListener( );
 //endregion
